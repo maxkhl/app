@@ -31,6 +31,28 @@ docker compose up -d
 The dashboard is at `http://<pi-ip>:8000`. The JSON API is at
 `http://<pi-ip>:8000/api/data`.
 
+### Skip the local build — use the prebuilt image
+
+A GitHub Actions workflow publishes multi-arch images
+(`linux/amd64`, `linux/arm64`, `linux/arm/v7`) to GHCR on every push to `main`
+and on version tags. To use it, swap `build: .` for `image:` in
+`docker-compose.yml`:
+
+```yaml
+services:
+  monitor:
+    image: ghcr.io/<your-github-user>/shitbox-monitor:latest
+    # ...rest unchanged
+```
+
+Then `docker compose pull && docker compose up -d` — no more multi-hour
+compiles on the Pi.
+
+> First time only: GHCR packages are private by default. After the first
+> successful workflow run, go to your GitHub profile → Packages →
+> `shitbox-monitor` → Package settings → "Change visibility" → Public.
+> Otherwise the Pi needs `docker login ghcr.io` with a PAT.
+
 ## API shape
 
 `GET /api/data` returns a flat object keyed by source-id:
