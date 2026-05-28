@@ -9,6 +9,7 @@ from fastapi.staticfiles import StaticFiles
 from registry import Registry
 from sources import Source
 from sources.router import TeltonikaSource
+from sources.shelly import ShellySource
 from sources.victron import VictronBleSource
 
 logging.basicConfig(
@@ -22,7 +23,11 @@ registry = Registry()
 SOURCES: list[Source] = [
     VictronBleSource(),
     TeltonikaSource(),
+    ShellySource(),
 ]
+
+for source in SOURCES:
+    source.register_routes(app, registry)
 
 
 @app.on_event("startup")
